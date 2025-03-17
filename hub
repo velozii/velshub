@@ -8,7 +8,7 @@ local function sendNotification()
     StarterGui:SetCore("SendNotification", {
         Title = "Velozi's Hub",
         Text = "Current Date and Time: " .. dateTime,
-        Icon = "rbxassetid://132372826085101"
+        Icon = "rbxassetid://115472008324688"
     })
 end
 
