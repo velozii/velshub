@@ -4,17 +4,6 @@ local Main = library:Main()
 local Tab = Main:Tab("Modern Crossroads")
 local Section = Tab:Section("MC Stuff")
 
-Section:Item("label", "Notice")
-
-Section:Item(
-    "textbox",
-    "TextBox",
-    function(v)
-        print(v)
-    end,
-    {Placeholder = "Speed doesn't work yet."}
-)
-
 Section:Item(
     "button",
     "HBE",
@@ -51,7 +40,7 @@ Section:Item(
 
 Section:Item(
     "slider",
-    "WS [doesn't work]",
+    "WS [not working]",
     function(v)
      print("wow")
     end
