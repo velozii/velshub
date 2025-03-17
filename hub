@@ -14,7 +14,6 @@ end
 
 sendNotification()
 
-
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wave"))()
 local Main = library:Main()
 local Tab = Main:Tab("Modern Crossroads")
