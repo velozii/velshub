@@ -40,7 +40,7 @@ Section:Item(
 
 Section:Item(
     "slider",
-    "Speed [non functional as of now]",
+    "WS (doesn't work)",
     function(v)
      print("wow")
     end
