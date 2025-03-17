@@ -7,16 +7,6 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/blood
 local Main = library:Main()
 local Tab = Main:Tab("Modern Crossroads")
 local Section = Tab:Section("MC Stuff")
-local function sendNotification()
-    local dateTime = os.date("%Y-%m-%d %H:%M:%S")
-    StarterGui:SetCore("SendNotification", {
-        Title = "Velozi's Hub",
-        Text = "Current Date and Time: " .. dateTime,
-        Icon = "rbxassetid://132372826085101"
-    })
-end
-
-sendNotification()
 
 Section:Item(
     "button",
