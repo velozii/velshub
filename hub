@@ -27,7 +27,9 @@ Section:Item(
     "HBE",
     function()
         library.Warn("HBE", "Executed")
-        while wait(0.3) do
+while( true )   
+do
+while wait(0.3) do
 
 for _, v in pairs(game:GetService("Players"):GetPlayers()) do
 
@@ -46,6 +48,7 @@ end
 
 end 
     end
+end
 )
 
 Section:Item(
