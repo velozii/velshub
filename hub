@@ -64,7 +64,7 @@ Section:Item(
 
 Section:Item(
     "button",
-    "HBE",
+    "Nar HBE cuz fuck nar (maybe working)",
     function()
         library.Warn("HBE", "Executed")
         while wait(0.3) do
