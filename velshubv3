@@ -1,4 +1,4 @@
-local DiscordLib = loadstring(game:HttpGet "https://raw.githubusercontent.com/velozii/velshub/refs/heads/main/hubv2test")()
+local DiscordLib = loadstring(game:HttpGet "https://raw.githubusercontent.com/velozii/velshub/refs/heads/main/hub")()
 
 local win = DiscordLib:Window("vel's hub :3")
 
