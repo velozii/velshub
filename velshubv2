@@ -41,7 +41,7 @@ btns:Button(
     "Check for Supply Drop",
     function()
         DiscordLib:Notification("Notification", "Checking for airdrop..", "Okay!")
-     loadstring(game:HttpGet "https://raw.githubusercontent.com/velozii/hbe/refs/heads/main/SDNotif")()
+      loadstring(game:HttpGet "https://raw.githubusercontent.com/velozii/hbe/refs/heads/main/SDNotif")()
     end
 )
 
