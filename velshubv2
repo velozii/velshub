@@ -26,6 +26,10 @@ btns:Button(
     end
 )
 
+btns:Label("Pro tip: to spawnkill someone (IY), use loopbring [player] [distance] 0, have fun!")
+
+)
+
 btns:Button(
     "Check for Supply Drop",
     function()
@@ -130,4 +134,4 @@ bnds:Bind(
         print("test")
     end
 )
-win:Server("Main", "http://www.roblox.com/asset/?id=6031075938")
+win:Server("Main", "http://www.roblox.com/asset/?id=111573033709131")
