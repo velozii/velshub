@@ -1,1 +1,592 @@
+local DiscordLib = {}
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local HttpService = game:GetService("HttpService")
+local pfp
+local user
+local tag
+local userinfo = {}
 
+-- Default theme colors
+local Theme = {
+    Main = Color3.fromRGB(114, 137, 228),
+    Secondary = Color3.fromRGB(54, 57, 63),
+    Background = Color3.fromRGB(47, 49, 54),
+    Text = Color3.fromRGB(255, 255, 255),
+    TextSecondary = Color3.fromRGB(127, 131, 137)
+}
+
+pcall(function()
+    userinfo = HttpService:JSONDecode(readfile("discordlibinfo.txt"));
+end)
+
+pfp = userinfo["pfp"] or "https://www.roblox.com/headshot-thumbnail/image?userId=".. game.Players.LocalPlayer.UserId .."&width=420&height=420&format=png"
+user =  userinfo["user"] or game.Players.LocalPlayer.Name
+tag = userinfo["tag"] or tostring(math.random(0001,9999))
+
+local function SaveInfo()
+    userinfo["pfp"] = pfp
+    userinfo["user"] = user
+    userinfo["tag"] = tag
+    writefile("discordlibinfo.txt", HttpService:JSONEncode(userinfo));
+end
+
+local function MakeDraggable(topbarobject, object)
+    -- ... (existing draggable function code remains the same)
+end
+
+function DiscordLib:SetTheme(newTheme)
+    for k, v in pairs(newTheme) do
+        if Theme[k] then
+            Theme[k] = v
+        end
+    end
+    -- You could add code here to update existing UI elements with the new theme
+end
+
+function DiscordLib:Window(text)
+    -- ... (existing window creation code until Settings section)
+
+    -- Inside the Settings section, add a Theme button next to MyAccountBtn
+    local ThemeBtn = Instance.new("TextButton")
+    local ThemeBtnCorner = Instance.new("UICorner")
+    local ThemeBtnTitle = Instance.new("TextLabel")
+
+    ThemeBtn.Name = "ThemeBtn"
+    ThemeBtn.Parent = LeftFrame
+    ThemeBtn.BackgroundColor3 = Color3.fromRGB(57, 60, 67)
+    ThemeBtn.BorderSizePixel = 0
+    ThemeBtn.Position = UDim2.new(0.271232396, 0, 0.181614026, 0)
+    ThemeBtn.Size = UDim2.new(0, 160, 0, 30)
+    ThemeBtn.AutoButtonColor = false
+    ThemeBtn.Font = Enum.Font.SourceSans
+    ThemeBtn.Text = ""
+    ThemeBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    ThemeBtn.TextSize = 14.000
+
+    ThemeBtnCorner.CornerRadius = UDim.new(0, 6)
+    ThemeBtnCorner.Name = "ThemeBtnCorner"
+    ThemeBtnCorner.Parent = ThemeBtn
+
+    ThemeBtnTitle.Name = "ThemeBtnTitle"
+    ThemeBtnTitle.Parent = ThemeBtn
+    ThemeBtnTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ThemeBtnTitle.BackgroundTransparency = 1.000
+    ThemeBtnTitle.BorderSizePixel = 0
+    ThemeBtnTitle.Position = UDim2.new(0.0759999976, 0, -0.166999996, 0)
+    ThemeBtnTitle.Size = UDim2.new(0, 95, 0, 39)
+    ThemeBtnTitle.Font = Enum.Font.GothamSemibold
+    ThemeBtnTitle.Text = "Theme"
+    ThemeBtnTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ThemeBtnTitle.TextSize = 14.000
+    ThemeBtnTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Theme button click event
+    ThemeBtn.MouseButton1Click:Connect(function()
+        CurrentSettingOpen.Text = "THEME"
+        
+        -- Clear existing settings
+        for i,v in next, SettingsHolder:GetChildren() do
+            if v.Name ~= "CloseSettingsBtn" and v.Name ~= "TextLabel" and v.Name ~= "CurrentSettingOpen" then
+                v:Destroy()
+            end
+        end
+        
+        -- Create theme selection UI
+        local ThemeFrame = Instance.new("Frame")
+        local ThemeFrameCorner = Instance.new("UICorner")
+        local ThemeTitle = Instance.new("TextLabel")
+        local ThemeFrameOutline = Instance.new("Frame")
+        local ThemeFrameOutlineCorner = Instance.new("UICorner")
+        
+        ThemeFrame.Name = "ThemeFrame"
+        ThemeFrame.Parent = SettingsHolder
+        ThemeFrame.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+        ThemeFrame.Position = UDim2.new(0.365638763, 0, 0.130666673, 0)
+        ThemeFrame.Size = UDim2.new(0, 362, 0, 164)
+        
+        ThemeFrameCorner.CornerRadius = UDim.new(0, 6)
+        ThemeFrameCorner.Name = "ThemeFrameCorner"
+        ThemeFrameCorner.Parent = ThemeFrame
+        
+        ThemeTitle.Name = "ThemeTitle"
+        ThemeTitle.Parent = ThemeFrame
+        ThemeTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        ThemeTitle.BackgroundTransparency = 1.000
+        ThemeTitle.Position = UDim2.new(0.038, 0, 0.072, 0)
+        ThemeTitle.Size = UDim2.new(0, 200, 0, 20)
+        ThemeTitle.Font = Enum.Font.GothamBold
+        ThemeTitle.Text = "SELECT THEME"
+        ThemeTitle.TextColor3 = Color3.fromRGB(126, 130, 136)
+        ThemeTitle.TextSize = 11.000
+        ThemeTitle.TextXAlignment = Enum.TextXAlignment.Left
+        
+        ThemeFrameOutline.Name = "ThemeFrameOutline"
+        ThemeFrameOutline.Parent = ThemeFrame
+        ThemeFrameOutline.BackgroundColor3 = Color3.fromRGB(54, 57, 63)
+        ThemeFrameOutline.Position = UDim2.new(0.0331491716, 0, 0.3, 0)
+        ThemeFrameOutline.Size = UDim2.new(0, 337, 0, 100)
+        
+        ThemeFrameOutlineCorner.CornerRadius = UDim.new(0, 6)
+        ThemeFrameOutlineCorner.Name = "ThemeFrameOutlineCorner"
+        ThemeFrameOutlineCorner.Parent = ThemeFrameOutline
+        
+        -- Predefined themes
+        local themes = {
+            {
+                Name = "Default",
+                Main = Color3.fromRGB(114, 137, 228),
+                Secondary = Color3.fromRGB(54, 57, 63),
+                Background = Color3.fromRGB(47, 49, 54),
+                Text = Color3.fromRGB(255, 255, 255),
+                TextSecondary = Color3.fromRGB(127, 131, 137)
+            },
+            {
+                Name = "Dark",
+                Main = Color3.fromRGB(25, 25, 25),
+                Secondary = Color3.fromRGB(40, 40, 40),
+                Background = Color3.fromRGB(20, 20, 20),
+                Text = Color3.fromRGB(200, 200, 200),
+                TextSecondary = Color3.fromRGB(150, 150, 150)
+            },
+            {
+                Name = "Light",
+                Main = Color3.fromRGB(0, 162, 255),
+                Secondary = Color3.fromRGB(220, 220, 220),
+                Background = Color3.fromRGB(240, 240, 240),
+                Text = Color3.fromRGB(50, 50, 50),
+                TextSecondary = Color3.fromRGB(100, 100, 100)
+            },
+            {
+                Name = "Red",
+                Main = Color3.fromRGB(255, 50, 50),
+                Secondary = Color3.fromRGB(70, 50, 50),
+                Background = Color3.fromRGB(50, 30, 30),
+                Text = Color3.fromRGB(255, 255, 255),
+                TextSecondary = Color3.fromRGB(200, 150, 150)
+            },
+            {
+                Name = "Green",
+                Main = Color3.fromRGB(50, 255, 50),
+                Secondary = Color3.fromRGB(50, 70, 50),
+                Background = Color3.fromRGB(30, 50, 30),
+                Text = Color3.fromRGB(255, 255, 255),
+                TextSecondary = Color3.fromRGB(150, 200, 150)
+            },
+            {
+                Name = "Custom",
+                Main = Theme.Main,
+                Secondary = Theme.Secondary,
+                Background = Theme.Background,
+                Text = Theme.Text,
+                TextSecondary = Theme.TextSecondary
+            }
+        }
+        
+        local ThemeList = Instance.new("ScrollingFrame")
+        local ThemeListLayout = Instance.new("UIListLayout")
+        
+        ThemeList.Name = "ThemeList"
+        ThemeList.Parent = ThemeFrameOutline
+        ThemeList.Active = true
+        ThemeList.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        ThemeList.BackgroundTransparency = 1.000
+        ThemeList.BorderSizePixel = 0
+        ThemeList.Position = UDim2.new(0.02, 0, 0.05, 0)
+        ThemeList.Size = UDim2.new(0.96, 0, 0.9, 0)
+        ThemeList.CanvasSize = UDim2.new(0, 0, 0, 0)
+        ThemeList.ScrollBarThickness = 3
+        
+        ThemeListLayout.Name = "ThemeListLayout"
+        ThemeListLayout.Parent = ThemeList
+        ThemeListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        ThemeListLayout.Padding = UDim.new(0, 5)
+        
+        for i, theme in ipairs(themes) do
+            local ThemeButton = Instance.new("TextButton")
+            local ThemeButtonCorner = Instance.new("UICorner")
+            local ThemeButtonTitle = Instance.new("TextLabel")
+            local ThemePreview = Instance.new("Frame")
+            local ThemePreviewCorner = Instance.new("UICorner")
+            
+            ThemeButton.Name = "ThemeButton"
+            ThemeButton.Parent = ThemeList
+            ThemeButton.BackgroundColor3 = Color3.fromRGB(60, 63, 69)
+            ThemeButton.Size = UDim2.new(0, 315, 0, 30)
+            ThemeButton.AutoButtonColor = false
+            ThemeButton.Font = Enum.Font.SourceSans
+            ThemeButton.Text = ""
+            ThemeButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+            ThemeButton.TextSize = 14.000
+            
+            ThemeButtonCorner.CornerRadius = UDim.new(0, 4)
+            ThemeButtonCorner.Name = "ThemeButtonCorner"
+            ThemeButtonCorner.Parent = ThemeButton
+            
+            ThemeButtonTitle.Name = "ThemeButtonTitle"
+            ThemeButtonTitle.Parent = ThemeButton
+            ThemeButtonTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ThemeButtonTitle.BackgroundTransparency = 1.000
+            ThemeButtonTitle.Position = UDim2.new(0.05, 0, 0, 0)
+            ThemeButtonTitle.Size = UDim2.new(0, 150, 0, 30)
+            ThemeButtonTitle.Font = Enum.Font.Gotham
+            ThemeButtonTitle.Text = theme.Name
+            ThemeButtonTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+            ThemeButtonTitle.TextSize = 14.000
+            ThemeButtonTitle.TextXAlignment = Enum.TextXAlignment.Left
+            
+            ThemePreview.Name = "ThemePreview"
+            ThemePreview.Parent = ThemeButton
+            ThemePreview.BackgroundColor3 = theme.Main
+            ThemePreview.Position = UDim2.new(0.8, 0, 0.15, 0)
+            ThemePreview.Size = UDim2.new(0, 20, 0, 20)
+            
+            ThemePreviewCorner.CornerRadius = UDim.new(0, 4)
+            ThemePreviewCorner.Name = "ThemePreviewCorner"
+            ThemePreviewCorner.Parent = ThemePreview
+            
+            ThemeButton.MouseEnter:Connect(function()
+                TweenService:Create(
+                    ThemeButton,
+                    TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                    {BackgroundColor3 = Color3.fromRGB(70, 73, 79)}
+                ):Play()
+            end)
+            
+            ThemeButton.MouseLeave:Connect(function()
+                TweenService:Create(
+                    ThemeButton,
+                    TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                    {BackgroundColor3 = Color3.fromRGB(60, 63, 69)}
+                ):Play()
+            end)
+            
+            ThemeButton.MouseButton1Click:Connect(function()
+                if theme.Name == "Custom" then
+                    -- Open custom theme color picker
+                    local ColorPicker = Instance.new("Frame")
+                    local ColorPickerCorner = Instance.new("UICorner")
+                    local ColorPickerTitle = Instance.new("TextLabel")
+                    local MainColor = Instance.new("TextButton")
+                    local MainColorCorner = Instance.new("UICorner")
+                    local MainColorTitle = Instance.new("TextLabel")
+                    local SecondaryColor = Instance.new("TextButton")
+                    local SecondaryColorCorner = Instance.new("UICorner")
+                    local SecondaryColorTitle = Instance.new("TextLabel")
+                    local BackgroundColor = Instance.new("TextButton")
+                    local BackgroundColorCorner = Instance.new("UICorner")
+                    local BackgroundColorTitle = Instance.new("TextLabel")
+                    local ApplyButton = Instance.new("TextButton")
+                    local ApplyButtonCorner = Instance.new("UICorner")
+                    
+                    ColorPicker.Name = "ColorPicker"
+                    ColorPicker.Parent = SettingsHolder
+                    ColorPicker.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+                    ColorPicker.Position = UDim2.new(0.365638763, 0, 0.130666673, 0)
+                    ColorPicker.Size = UDim2.new(0, 362, 0, 220)
+                    ColorPicker.ZIndex = 2
+                    
+                    ColorPickerCorner.CornerRadius = UDim.new(0, 6)
+                    ColorPickerCorner.Name = "ColorPickerCorner"
+                    ColorPickerCorner.Parent = ColorPicker
+                    
+                    ColorPickerTitle.Name = "ColorPickerTitle"
+                    ColorPickerTitle.Parent = ColorPicker
+                    ColorPickerTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                    ColorPickerTitle.BackgroundTransparency = 1.000
+                    ColorPickerTitle.Position = UDim2.new(0.038, 0, 0.045, 0)
+                    ColorPickerTitle.Size = UDim2.new(0, 200, 0, 20)
+                    ColorPickerTitle.Font = Enum.Font.GothamBold
+                    ColorPickerTitle.Text = "CUSTOM THEME"
+                    ColorPickerTitle.TextColor3 = Color3.fromRGB(126, 130, 136)
+                    ColorPickerTitle.TextSize = 11.000
+                    ColorPickerTitle.TextXAlignment = Enum.TextXAlignment.Left
+                    
+                    MainColor.Name = "MainColor"
+                    MainColor.Parent = ColorPicker
+                    MainColor.BackgroundColor3 = Theme.Main
+                    MainColor.Position = UDim2.new(0.1, 0, 0.2, 0)
+                    MainColor.Size = UDim2.new(0, 100, 0, 30)
+                    MainColor.AutoButtonColor = false
+                    MainColor.Font = Enum.Font.SourceSans
+                    MainColor.Text = ""
+                    MainColor.TextColor3 = Color3.fromRGB(0, 0, 0)
+                    MainColor.TextSize = 14.000
+                    
+                    MainColorCorner.CornerRadius = UDim.new(0, 6)
+                    MainColorCorner.Name = "MainColorCorner"
+                    MainColorCorner.Parent = MainColor
+                    
+                    MainColorTitle.Name = "MainColorTitle"
+                    MainColorTitle.Parent = MainColor
+                    MainColorTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                    MainColorTitle.BackgroundTransparency = 1.000
+                    MainColorTitle.Size = UDim2.new(1, 0, 1, 0)
+                    MainColorTitle.Font = Enum.Font.Gotham
+                    MainColorTitle.Text = "Main Color"
+                    MainColorTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    MainColorTitle.TextSize = 14.000
+                    
+                    SecondaryColor.Name = "SecondaryColor"
+                    SecondaryColor.Parent = ColorPicker
+                    SecondaryColor.BackgroundColor3 = Theme.Secondary
+                    SecondaryColor.Position = UDim2.new(0.1, 0, 0.45, 0)
+                    SecondaryColor.Size = UDim2.new(0, 100, 0, 30)
+                    SecondaryColor.AutoButtonColor = false
+                    SecondaryColor.Font = Enum.Font.SourceSans
+                    SecondaryColor.Text = ""
+                    SecondaryColor.TextColor3 = Color3.fromRGB(0, 0, 0)
+                    SecondaryColor.TextSize = 14.000
+                    
+                    SecondaryColorCorner.CornerRadius = UDim.new(0, 6)
+                    SecondaryColorCorner.Name = "SecondaryColorCorner"
+                    SecondaryColorCorner.Parent = SecondaryColor
+                    
+                    SecondaryColorTitle.Name = "SecondaryColorTitle"
+                    SecondaryColorTitle.Parent = SecondaryColor
+                    SecondaryColorTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                    SecondaryColorTitle.BackgroundTransparency = 1.000
+                    SecondaryColorTitle.Size = UDim2.new(1, 0, 1, 0)
+                    SecondaryColorTitle.Font = Enum.Font.Gotham
+                    SecondaryColorTitle.Text = "Secondary"
+                    SecondaryColorTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    SecondaryColorTitle.TextSize = 14.000
+                    
+                    BackgroundColor.Name = "BackgroundColor"
+                    BackgroundColor.Parent = ColorPicker
+                    BackgroundColor.BackgroundColor3 = Theme.Background
+                    BackgroundColor.Position = UDim2.new(0.1, 0, 0.7, 0)
+                    BackgroundColor.Size = UDim2.new(0, 100, 0, 30)
+                    BackgroundColor.AutoButtonColor = false
+                    BackgroundColor.Font = Enum.Font.SourceSans
+                    BackgroundColor.Text = ""
+                    BackgroundColor.TextColor3 = Color3.fromRGB(0, 0, 0)
+                    BackgroundColor.TextSize = 14.000
+                    
+                    BackgroundColorCorner.CornerRadius = UDim.new(0, 6)
+                    BackgroundColorCorner.Name = "BackgroundColorCorner"
+                    BackgroundColorCorner.Parent = BackgroundColor
+                    
+                    BackgroundColorTitle.Name = "BackgroundColorTitle"
+                    BackgroundColorTitle.Parent = BackgroundColor
+                    BackgroundColorTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                    BackgroundColorTitle.BackgroundTransparency = 1.000
+                    BackgroundColorTitle.Size = UDim2.new(1, 0, 1, 0)
+                    BackgroundColorTitle.Font = Enum.Font.Gotham
+                    BackgroundColorTitle.Text = "Background"
+                    BackgroundColorTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    BackgroundColorTitle.TextSize = 14.000
+                    
+                    ApplyButton.Name = "ApplyButton"
+                    ApplyButton.Parent = ColorPicker
+                    ApplyButton.BackgroundColor3 = Color3.fromRGB(114, 137, 228)
+                    ApplyButton.Position = UDim2.new(0.7, 0, 0.85, 0)
+                    ApplyButton.Size = UDim2.new(0, 80, 0, 30)
+                    ApplyButton.Font = Enum.Font.Gotham
+                    ApplyButton.Text = "Apply"
+                    ApplyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    ApplyButton.TextSize = 14.000
+                    
+                    ApplyButtonCorner.CornerRadius = UDim.new(0, 6)
+                    ApplyButtonCorner.Name = "ApplyButtonCorner"
+                    ApplyButtonCorner.Parent = ApplyButton
+                    
+                    -- Color picker functionality for each color button
+                    local function setupColorPicker(button, colorType)
+                        button.MouseButton1Click:Connect(function()
+                            local ColorPickerFrame = Instance.new("Frame")
+                            local ColorPickerFrameCorner = Instance.new("UICorner")
+                            local Color = Instance.new("ImageLabel")
+                            local ColorCorner = Instance.new("UICorner")
+                            local ColorSelection = Instance.new("ImageLabel")
+                            local Hue = Instance.new("ImageLabel")
+                            local HueCorner = Instance.new("UICorner")
+                            local HueGradient = Instance.new("UIGradient")
+                            local HueSelection = Instance.new("ImageLabel")
+                            
+                            ColorPickerFrame.Name = "ColorPickerFrame"
+                            ColorPickerFrame.Parent = SettingsHolder
+                            ColorPickerFrame.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+                            ColorPickerFrame.Position = UDim2.new(0.5, -100, 0.5, -100)
+                            ColorPickerFrame.Size = UDim2.new(0, 200, 0, 200)
+                            ColorPickerFrame.ZIndex = 3
+                            
+                            ColorPickerFrameCorner.CornerRadius = UDim.new(0, 6)
+                            ColorPickerFrameCorner.Name = "ColorPickerFrameCorner"
+                            ColorPickerFrameCorner.Parent = ColorPickerFrame
+                            
+                            Color.Name = "Color"
+                            Color.Parent = ColorPickerFrame
+                            Color.BackgroundColor3 = Color3.fromRGB(255, 0, 4)
+                            Color.Position = UDim2.new(0, 10, 0, 10)
+                            Color.Size = UDim2.new(0, 154, 0, 118)
+                            Color.ZIndex = 10
+                            Color.Image = "rbxassetid://4155801252"
+                            
+                            ColorCorner.CornerRadius = UDim.new(0, 3)
+                            ColorCorner.Name = "ColorCorner"
+                            ColorCorner.Parent = Color
+                            
+                            ColorSelection.Name = "ColorSelection"
+                            ColorSelection.Parent = Color
+                            ColorSelection.AnchorPoint = Vector2.new(0.5, 0.5)
+                            ColorSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                            ColorSelection.BackgroundTransparency = 1.000
+                            ColorSelection.Position = UDim2.new(0.5, 0, 0.5, 0)
+                            ColorSelection.Size = UDim2.new(0, 18, 0, 18)
+                            ColorSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
+                            ColorSelection.ScaleType = Enum.ScaleType.Fit
+                            
+                            Hue.Name = "Hue"
+                            Hue.Parent = ColorPickerFrame
+                            Hue.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                            Hue.Position = UDim2.new(0, 171, 0, 10)
+                            Hue.Size = UDim2.new(0, 18, 0, 118)
+                            
+                            HueCorner.CornerRadius = UDim.new(0, 3)
+                            HueCorner.Name = "HueCorner"
+                            HueCorner.Parent = Hue
+                            
+                            HueGradient.Color = ColorSequence.new {
+                                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)),
+                                ColorSequenceKeypoint.new(0.20, Color3.fromRGB(234, 255, 0)),
+                                ColorSequenceKeypoint.new(0.40, Color3.fromRGB(21, 255, 0)),
+                                ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 255, 255)),
+                                ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0, 17, 255)),
+                                ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 251)),
+                                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))
+                            }                
+                            HueGradient.Rotation = 270
+                            HueGradient.Name = "HueGradient"
+                            HueGradient.Parent = Hue
+                            
+                            HueSelection.Name = "HueSelection"
+                            HueSelection.Parent = Hue
+                            HueSelection.AnchorPoint = Vector2.new(0.5, 0.5)
+                            HueSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                            HueSelection.BackgroundTransparency = 1.000
+                            HueSelection.Position = UDim2.new(0.48, 0, 0.5, 0)
+                            HueSelection.Size = UDim2.new(0, 18, 0, 18)
+                            HueSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
+                            
+                            local function UpdateColorPicker()
+                                button.BackgroundColor3 = Color3.fromHSV(ColorH, ColorS, ColorV)
+                                Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
+                            end
+                            
+                            ColorH = 1 - (math.clamp(HueSelection.AbsolutePosition.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) / Hue.AbsoluteSize.Y)
+                            ColorS = (math.clamp(ColorSelection.AbsolutePosition.X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) / Color.AbsoluteSize.X)
+                            ColorV = 1 - (math.clamp(ColorSelection.AbsolutePosition.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) / Color.AbsoluteSize.Y)
+                            
+                            button.BackgroundColor3 = Theme[colorType]
+                            Color.BackgroundColor3 = Theme[colorType]
+                            
+                            Color.InputBegan:Connect(function(input)
+                                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                                    if ColorInput then
+                                        ColorInput:Disconnect()
+                                    end
+                                    
+                                    ColorInput = RunService.RenderStepped:Connect(function()
+                                        local ColorX = (math.clamp(Mouse.X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) / Color.AbsoluteSize.X)
+                                        local ColorY = (math.clamp(Mouse.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) / Color.AbsoluteSize.Y)
+                                        
+                                        ColorSelection.Position = UDim2.new(ColorX, 0, ColorY, 0)
+                                        ColorS = ColorX
+                                        ColorV = 1 - ColorY
+                                        
+                                        UpdateColorPicker()
+                                    end)
+                                end
+                            end)
+                            
+                            Color.InputEnded:Connect(function(input)
+                                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                                    if ColorInput then
+                                        ColorInput:Disconnect()
+                                    end
+                                end
+                            end)
+                            
+                            Hue.InputBegan:Connect(function(input)
+                                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                                    if HueInput then
+                                        HueInput:Disconnect()
+                                    end
+                                    
+                                    HueInput = RunService.RenderStepped:Connect(function()
+                                        local HueY = (math.clamp(Mouse.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) / Hue.AbsoluteSize.Y
+                                        
+                                        HueSelection.Position = UDim2.new(0.48, 0, HueY, 0)
+                                        ColorH = 1 - HueY
+                                        
+                                        UpdateColorPicker()
+                                    end)
+                                end
+                            end)
+                            
+                            Hue.InputEnded:Connect(function(input)
+                                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                                    if HueInput then
+                                        HueInput:Disconnect()
+                                    end
+                                end
+                            end)
+                            
+                            -- Close button
+                            local CloseButton = Instance.new("TextButton")
+                            local CloseButtonCorner = Instance.new("UICorner")
+                            
+                            CloseButton.Name = "CloseButton"
+                            CloseButton.Parent = ColorPickerFrame
+                            CloseButton.BackgroundColor3 = Color3.fromRGB(114, 137, 228)
+                            CloseButton.Position = UDim2.new(0.5, -50, 0.85, 0)
+                            CloseButton.Size = UDim2.new(0, 100, 0, 25)
+                            CloseButton.Font = Enum.Font.Gotham
+                            CloseButton.Text = "OK"
+                            CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                            CloseButton.TextSize = 14.000
+                            
+                            CloseButtonCorner.CornerRadius = UDim.new(0, 6)
+                            CloseButtonCorner.Name = "CloseButtonCorner"
+                            CloseButtonCorner.Parent = CloseButton
+                            
+                            CloseButton.MouseButton1Click:Connect(function()
+                                ColorPickerFrame:Destroy()
+                                Theme[colorType] = button.BackgroundColor3
+                            end)
+                        end)
+                    end
+                    
+                    setupColorPicker(MainColor, "Main")
+                    setupColorPicker(SecondaryColor, "Secondary")
+                    setupColorPicker(BackgroundColor, "Background")
+                    
+                    ApplyButton.MouseButton1Click:Connect(function()
+                        DiscordLib:SetTheme({
+                            Main = MainColor.BackgroundColor3,
+                            Secondary = SecondaryColor.BackgroundColor3,
+                            Background = BackgroundColor.BackgroundColor3,
+                            Text = Color3.fromRGB(255, 255, 255),
+                            TextSecondary = Color3.fromRGB(127, 131, 137)
+                        })
+                        ColorPicker:Destroy()
+                        ThemeFrame:Destroy()
+                    end)
+                else
+                    DiscordLib:SetTheme(theme)
+                end
+            end)
+        end
+        
+        ThemeList.CanvasSize = UDim2.new(0, 0, 0, ThemeListLayout.AbsoluteContentSize.Y + 10)
+    end)
+    
+    -- ... (rest of the existing code remains the same)
+    
+    return ServerHold
+end
+return DiscordLib
