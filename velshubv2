@@ -1,9 +1,12 @@
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+
 local DiscordLib =
     loadstring(game:HttpGet "https://raw.githubusercontent.com/velozii/velshub/refs/heads/main/hub")()
 
 local win = DiscordLib:Window("vel's hub :3")
 
-local serv = win:Server("Modern Crossroads", "")
+local serv = win:Server("Modern Crossroads", "111573033709131")
 
 local btns = serv:Channel("Buttons")
 
@@ -14,7 +17,7 @@ btns:Button(
      loadstring(game:HttpGet "https://raw.githubusercontent.com/edgeiy/infiniteyield/master/source")()
     end
 )
-
+btns:Seperator()
 btns:Button(
     "Hitbox Extender",
     function()
@@ -26,7 +29,7 @@ btns:Button(
 btns:Label("Pro tip: to spawnkill someone (IY), use loopbring [player] [distance] 0, have fun!")
 
 )
-
+btns:Seperator()
 btns:Button(
     "Check for Supply Drop",
     function()
@@ -131,4 +134,4 @@ bnds:Bind(
         print("test")
     end
 )
-win:Server("Main", "http://www.roblox.com/asset/?id=111573033709131")
+win:Server("Main", "http://www.roblox.com/asset/?id=0")
