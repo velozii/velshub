@@ -1,1 +1,201 @@
+local DiscordLib = loadstring(game:HttpGet "https://raw.githubusercontent.com/velozii/velshub/refs/heads/main/hubv2test")()
 
+local win = DiscordLib:Window("vel's hub :3")
+
+local serv = win:Server("Modern Crossroads", "117680836444329")
+
+-- Buttons Channel
+local btns = serv:Channel("Buttons")
+
+btns:Button(
+    "Infinite Yield",
+    function()
+        DiscordLib:Notification("Notification", "Ran infinite yield!", "Okay!")
+        loadstring(game:HttpGet "https://raw.githubusercontent.com/edgeiy/infiniteyield/master/source")()
+    end
+)
+btns:Label("If you're uneducated, Infinite yield is a admin script :)")
+btns:Seperator()
+
+btns:Button(
+    "Hitbox Extender",
+    function()
+        DiscordLib:Notification("Notification", "Ran hitbox extender!", "Okay!")
+        loadstring(game:HttpGet "https://raw.githubusercontent.com/velozii/hbe/refs/heads/main/hbe")()
+    end
+)
+
+btns:Label("Pro tip: to spawnkill someone (IY), use loopbring [player] [distance] 0, have fun!")
+btns:Seperator()
+
+btns:Button(
+    "Check for Supply Drop",
+    function()
+        DiscordLib:Notification("Notification", "Checking for airdrop..", "Okay!")
+        loadstring(game:HttpGet "https://raw.githubusercontent.com/velozii/hbe/refs/heads/main/SDNotif")()
+    end
+)
+
+btns:Label("If you don't get a notification, a airdrop has not spawned :)")
+btns:Seperator()
+
+-- Toggles Channel
+local tgls = serv:Channel("Toggles")
+
+tgls:Toggle(
+    "No Trampoline",
+    false,
+    function(bool)
+        local partPosition = Vector3.new(-134.14, -2.8, -58.97)
+        local partSize = Vector3.new(30, 3, 30)
+        
+        if bool then
+            if not workspace:FindFirstChild("TestPlatform") then
+                local part = Instance.new("Part")
+                part.Name = "TestPlatform"
+                part.Anchored = true
+                part.Position = partPosition
+                part.Size = partSize
+                part.Parent = workspace
+                DiscordLib:Notification("Platform", "Platform created!", "Okay!")
+            end
+        else
+            local existingPart = workspace:FindFirstChild("TestPlatform")
+            if existingPart then
+                existingPart:Destroy()
+                DiscordLib:Notification("Platform", "Platform removed!", "Okay!")
+            end
+        end
+    end
+)
+
+tgls:Toggle(
+    "Force Daytime",
+    false,
+    function(bool)
+        local success, errorMessage = pcall(function()
+            local Lighting = game:GetService("Lighting")
+            local RunService = game:GetService("RunService")
+            
+            if bool then
+                if _G.ClientDaylightLoop then
+                    _G.ClientDaylightLoop:Disconnect()
+                end
+                
+                if not _G.OriginalClientTime then
+                    _G.OriginalClientTime = Lighting.ClockTime
+                end
+                
+                _G.ClientDaylightLoop = RunService.Heartbeat:Connect(function()
+                    pcall(function()
+                        Lighting.ClockTime = 12
+                    end)
+                end)
+                DiscordLib:Notification("Daylight", "Forced daytime ON!", "Okay!")
+            else
+                if _G.ClientDaylightLoop then
+                    _G.ClientDaylightLoop:Disconnect()
+                    _G.ClientDaylightLoop = nil
+                    
+                    if _G.OriginalClientTime then
+                        Lighting.ClockTime = _G.OriginalClientTime
+                    end
+                    DiscordLib:Notification("Daylight", "Forced daytime OFF!", "Okay!")
+                end
+            end
+        end)
+        
+        if not success then
+            warn("Daylight error:", errorMessage)
+            DiscordLib:Notification("Error", "Daylight toggle failed: "..tostring(errorMessage), "Okay!")
+        end
+    end
+)
+
+-- Sliders Channel (fixed)
+local sldrs = serv:Channel("Sliders")
+
+sldrs:Slider(
+    "Test Slider",
+    0,  -- min
+    100,  -- max
+    50,  -- default
+    false,
+    function(value)
+        print("Slider value:", value)
+    end
+)
+
+-- Dropdowns Channel
+local drops = serv:Channel("Dropdowns")
+
+local drop = drops:Dropdown(
+    "Test Dropdown",
+    {"Option 1", "Option 2", "Option 3", "Option 4", "Option 5"},
+    function(selected)
+        print("Selected:", selected)
+        DiscordLib:Notification("Dropdown", "Selected: "..selected, "Okay!")
+    end
+)
+
+drops:Button(
+    "Clear Dropdown",
+    function()
+        drop:Clear()
+        DiscordLib:Notification("Dropdown", "Options cleared!", "Okay!")
+    end
+)
+
+drops:Button(
+    "Add Option",
+    function()
+        drop:Add("New Option")
+        DiscordLib:Notification("Dropdown", "Added new option!", "Okay!")
+    end
+)
+
+-- Colorpickers Channel
+local clrs = serv:Channel("Colorpickers")
+
+clrs:Colorpicker(
+    "ESP Color",
+    Color3.fromRGB(255, 1, 1),
+    function(color)
+        print("Selected color:", color)
+        DiscordLib:Notification("Color", "Color selected!", "Okay!")
+    end
+)
+
+-- Textboxes Channel
+local textbs = serv:Channel("Textboxes")
+
+textbs:Textbox(
+    "Test Textbox",
+    "Type here!",
+    true,
+    function(text)
+        print("Entered text:", text)
+        DiscordLib:Notification("Textbox", "You entered: "..text, "Okay!")
+    end
+)
+
+-- Labels Channel
+local lbls = serv:Channel("Labels")
+
+lbls:Label("Seer and vel are cool! :)")
+lbls:Label("Modern Crossroads Hub v1.0")
+
+-- Binds Channel
+local bnds = serv:Channel("Binds")
+
+bnds:Bind(
+    "Test Bind",
+    Enum.KeyCode.RightShift,
+    function()
+        print("Bind pressed!")
+        DiscordLib:Notification("Bind", "RightShift pressed!", "Okay!")
+    end
+)
+
+-- Second Server
+win:Server("Main", "http://www.roblox.com/asset/?id=0")
