@@ -35,7 +35,7 @@ local function SaveInfo()
 end
 
 local function MakeDraggable(topbarobject, object)
-    -- ... (existing draggable function code remains the same)
+    -- ... (existing draggable function remains the same)
 end
 
 function DiscordLib:SetTheme(newTheme)
@@ -57,7 +57,7 @@ function DiscordLib:Window(text)
 
     ThemeBtn.Name = "ThemeBtn"
     ThemeBtn.Parent = LeftFrame
-    ThemeBtn.BackgroundColor3 = Color3.fromRGB(57, 60, 67)
+    ThemeBtn.BackgroundColor3 = Theme.Secondary
     ThemeBtn.BorderSizePixel = 0
     ThemeBtn.Position = UDim2.new(0.271232396, 0, 0.181614026, 0)
     ThemeBtn.Size = UDim2.new(0, 160, 0, 30)
@@ -80,7 +80,7 @@ function DiscordLib:Window(text)
     ThemeBtnTitle.Size = UDim2.new(0, 95, 0, 39)
     ThemeBtnTitle.Font = Enum.Font.GothamSemibold
     ThemeBtnTitle.Text = "Theme"
-    ThemeBtnTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ThemeBtnTitle.TextColor3 = Theme.Text
     ThemeBtnTitle.TextSize = 14.000
     ThemeBtnTitle.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -104,7 +104,7 @@ function DiscordLib:Window(text)
         
         ThemeFrame.Name = "ThemeFrame"
         ThemeFrame.Parent = SettingsHolder
-        ThemeFrame.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+        ThemeFrame.BackgroundColor3 = Theme.Background
         ThemeFrame.Position = UDim2.new(0.365638763, 0, 0.130666673, 0)
         ThemeFrame.Size = UDim2.new(0, 362, 0, 164)
         
@@ -120,13 +120,13 @@ function DiscordLib:Window(text)
         ThemeTitle.Size = UDim2.new(0, 200, 0, 20)
         ThemeTitle.Font = Enum.Font.GothamBold
         ThemeTitle.Text = "SELECT THEME"
-        ThemeTitle.TextColor3 = Color3.fromRGB(126, 130, 136)
+        ThemeTitle.TextColor3 = Theme.TextSecondary
         ThemeTitle.TextSize = 11.000
         ThemeTitle.TextXAlignment = Enum.TextXAlignment.Left
         
         ThemeFrameOutline.Name = "ThemeFrameOutline"
         ThemeFrameOutline.Parent = ThemeFrame
-        ThemeFrameOutline.BackgroundColor3 = Color3.fromRGB(54, 57, 63)
+        ThemeFrameOutline.BackgroundColor3 = Theme.Secondary
         ThemeFrameOutline.Position = UDim2.new(0.0331491716, 0, 0.3, 0)
         ThemeFrameOutline.Size = UDim2.new(0, 337, 0, 100)
         
@@ -234,7 +234,7 @@ function DiscordLib:Window(text)
             ThemeButtonTitle.Size = UDim2.new(0, 150, 0, 30)
             ThemeButtonTitle.Font = Enum.Font.Gotham
             ThemeButtonTitle.Text = theme.Name
-            ThemeButtonTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+            ThemeButtonTitle.TextColor3 = Theme.Text
             ThemeButtonTitle.TextSize = 14.000
             ThemeButtonTitle.TextXAlignment = Enum.TextXAlignment.Left
             
@@ -284,7 +284,7 @@ function DiscordLib:Window(text)
                     
                     ColorPicker.Name = "ColorPicker"
                     ColorPicker.Parent = SettingsHolder
-                    ColorPicker.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+                    ColorPicker.BackgroundColor3 = Theme.Background
                     ColorPicker.Position = UDim2.new(0.365638763, 0, 0.130666673, 0)
                     ColorPicker.Size = UDim2.new(0, 362, 0, 220)
                     ColorPicker.ZIndex = 2
@@ -301,7 +301,7 @@ function DiscordLib:Window(text)
                     ColorPickerTitle.Size = UDim2.new(0, 200, 0, 20)
                     ColorPickerTitle.Font = Enum.Font.GothamBold
                     ColorPickerTitle.Text = "CUSTOM THEME"
-                    ColorPickerTitle.TextColor3 = Color3.fromRGB(126, 130, 136)
+                    ColorPickerTitle.TextColor3 = Theme.TextSecondary
                     ColorPickerTitle.TextSize = 11.000
                     ColorPickerTitle.TextXAlignment = Enum.TextXAlignment.Left
                     
@@ -327,7 +327,7 @@ function DiscordLib:Window(text)
                     MainColorTitle.Size = UDim2.new(1, 0, 1, 0)
                     MainColorTitle.Font = Enum.Font.Gotham
                     MainColorTitle.Text = "Main Color"
-                    MainColorTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    MainColorTitle.TextColor3 = Theme.Text
                     MainColorTitle.TextSize = 14.000
                     
                     SecondaryColor.Name = "SecondaryColor"
@@ -352,7 +352,7 @@ function DiscordLib:Window(text)
                     SecondaryColorTitle.Size = UDim2.new(1, 0, 1, 0)
                     SecondaryColorTitle.Font = Enum.Font.Gotham
                     SecondaryColorTitle.Text = "Secondary"
-                    SecondaryColorTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    SecondaryColorTitle.TextColor3 = Theme.Text
                     SecondaryColorTitle.TextSize = 14.000
                     
                     BackgroundColor.Name = "BackgroundColor"
@@ -377,17 +377,17 @@ function DiscordLib:Window(text)
                     BackgroundColorTitle.Size = UDim2.new(1, 0, 1, 0)
                     BackgroundColorTitle.Font = Enum.Font.Gotham
                     BackgroundColorTitle.Text = "Background"
-                    BackgroundColorTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    BackgroundColorTitle.TextColor3 = Theme.Text
                     BackgroundColorTitle.TextSize = 14.000
                     
                     ApplyButton.Name = "ApplyButton"
                     ApplyButton.Parent = ColorPicker
-                    ApplyButton.BackgroundColor3 = Color3.fromRGB(114, 137, 228)
+                    ApplyButton.BackgroundColor3 = Theme.Main
                     ApplyButton.Position = UDim2.new(0.7, 0, 0.85, 0)
                     ApplyButton.Size = UDim2.new(0, 80, 0, 30)
                     ApplyButton.Font = Enum.Font.Gotham
                     ApplyButton.Text = "Apply"
-                    ApplyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    ApplyButton.TextColor3 = Theme.Text
                     ApplyButton.TextSize = 14.000
                     
                     ApplyButtonCorner.CornerRadius = UDim.new(0, 6)
@@ -409,7 +409,7 @@ function DiscordLib:Window(text)
                             
                             ColorPickerFrame.Name = "ColorPickerFrame"
                             ColorPickerFrame.Parent = SettingsHolder
-                            ColorPickerFrame.BackgroundColor3 = Color3.fromRGB(47, 49, 54)
+                            ColorPickerFrame.BackgroundColor3 = Theme.Background
                             ColorPickerFrame.Position = UDim2.new(0.5, -100, 0.5, -100)
                             ColorPickerFrame.Size = UDim2.new(0, 200, 0, 200)
                             ColorPickerFrame.ZIndex = 3
@@ -542,12 +542,12 @@ function DiscordLib:Window(text)
                             
                             CloseButton.Name = "CloseButton"
                             CloseButton.Parent = ColorPickerFrame
-                            CloseButton.BackgroundColor3 = Color3.fromRGB(114, 137, 228)
+                            CloseButton.BackgroundColor3 = Theme.Main
                             CloseButton.Position = UDim2.new(0.5, -50, 0.85, 0)
                             CloseButton.Size = UDim2.new(0, 100, 0, 25)
                             CloseButton.Font = Enum.Font.Gotham
                             CloseButton.Text = "OK"
-                            CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                            CloseButton.TextColor3 = Theme.Text
                             CloseButton.TextSize = 14.000
                             
                             CloseButtonCorner.CornerRadius = UDim.new(0, 6)
