@@ -5,7 +5,7 @@ local function sendNotification()
     local dateTime = os.date("%Y-%m-%d %H:%M:%S")
     StarterGui:SetCore("SendNotification", {
         Title = "Velozi's Hub",
-        Text = "Current Date and Time: " .. dateTime, Welcome, game.Players.LocalPlayer.Name
+        Text = "Current Date and Time: " .. dateTime
         Icon = "rbxassetid://115472008324688"
     })
 end
