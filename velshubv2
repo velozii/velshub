@@ -1,17 +1,6 @@
 local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 
-local function sendNotification()
-    local dateTime = os.date("%Y-%m-%d %H:%M:%S")
-    StarterGui:SetCore("SendNotification", {
-        Title = "Velozi's Hub",
-        Text = "Current Date and Time: " .. dateTime
-        Icon = "rbxassetid://115472008324688"
-    })
-end
-
-sendNotification()
-
 local DiscordLib =
     loadstring(game:HttpGet "https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/discord")()
 
