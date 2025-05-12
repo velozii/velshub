@@ -58,7 +58,8 @@ local specialUsers = {
 }
 
 local safeSpotData = {
-    Part = nil,
+    Platform = nil,
+    Light = nil,
     OriginalPosition = nil
 }
 
@@ -76,30 +77,43 @@ tgls:Toggle(
             -- Store original position
             safeSpotData.OriginalPosition = humanoidRootPart.Position
             
-            -- Create safe spot platform
+            -- Create platform
             local part = Instance.new("Part")
             part.Size = Vector3.new(30, 5, 30)
             part.Position = Vector3.new(10000, 10000, 10000)
             part.Anchored = true
             part.CanCollide = true
             part.Name = "SafeSpotPlatform"
-            part.Transparency = 0.5 -- Optional visibility
-            part.Color = Color3.fromRGB(0, 255, 0) -- Optional green color
+            part.Material = Enum.Material.Neon
+            part.Color = Color3.fromRGB(50, 255, 50) -- Glowing green
+            part.Transparency = 0.3
             part.Parent = workspace
             
-            safeSpotData.Part = part
+            -- Create upward-facing light
+            local light = Instance.new("SpotLight")
+            light.Parent = part
+            light.Face = Enum.NormalId.Top -- Shines upward
+            light.Angle = 90
+            light.Brightness = 5
+            light.Range = 50
+            light.Color = Color3.fromRGB(100, 255, 100)
+            light.Shadows = true
             
-            -- Teleport player on top of platform (+5 Y offset)
+            safeSpotData.Platform = part
+            safeSpotData.Light = light
+            
+            -- Teleport player on top of platform
             humanoidRootPart.CFrame = CFrame.new(10000, 10005, 10000)
         else
-            -- Cleanup when toggled off
+            -- Cleanup
             if safeSpotData.OriginalPosition then
                 humanoidRootPart.CFrame = CFrame.new(safeSpotData.OriginalPosition)
             end
             
-            if safeSpotData.Part then
-                safeSpotData.Part:Destroy()
-                safeSpotData.Part = nil
+            if safeSpotData.Platform then
+                safeSpotData.Platform:Destroy()
+                safeSpotData.Platform = nil
+                safeSpotData.Light = nil
             end
             
             safeSpotData.OriginalPosition = nil
