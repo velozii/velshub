@@ -161,39 +161,103 @@ features:Toggle("Force Daytime", false, function(bool)
 end)
 
 -- Anti Trampoline
-features:Toggle("Anti Trampoline", false, function(bool)
+features:Toggle("Anti trampoline bounce", false, function(bool)
+    local workspace = game:GetService("Workspace")
     local path = workspace.CurrentMap.Map.Tower.PL3Trampoline
+    local bouncers = path:GetDescendants()
     
+    -- Storage for originals
+    if not _G.BouncerBackup then
+        _G.BouncerBackup = {
+            Models = {},    -- Stores model data
+            Scripts = {}   -- Stores original scripts
+        }
+    end
+
     if bool then
-        -- Create anchored replacements
+        -- TOGGLE ON - Save originals and replace with anchored parts
         for _, model in ipairs(path:GetChildren()) do
             if model.Name == "Bouncer" and model:IsA("Model") then
-                for _, part in ipairs(model:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        local replacement = Instance.new("Part")
-                        replacement.Size = part.Size
-                        replacement.Position = part.Position
-                        replacement.Orientation = part.Orientation
-                        replacement.Anchored = true
-                        replacement.CanCollide = true
-                        replacement.Name = "BouncerReplacement"
-                        replacement.Parent = path
+                -- Save model data if not already saved
+                if not _G.BouncerBackup.Models[model] then
+                    _G.BouncerBackup.Models[model] = {
+                        CFrame = model:GetPivot(),
+                        Parts = {}
+                    }
+                    
+                    -- Save all parts
+                    for _, part in ipairs(model:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            table.insert(_G.BouncerBackup.Models[model].Parts, {
+                                Size = part.Size,
+                                Position = part.Position,
+                                Orientation = part.Orientation,
+                                Color = part.Color,
+                                Transparency = part.Transparency,
+                                Material = part.Material,
+                                Anchored = part.Anchored
+                            })
+                        end
                     end
                 end
-                model.Parent = nil
+
+                -- Save all scripts (without deleting them)
+                for _, script in ipairs(model:GetDescendants()) do
+                    if (script:IsA("Script") or script:IsA("LocalScript")) then
+                        _G.BouncerBackup.Scripts[script] = {
+                            Source = script.Source,
+                            Disabled = script.Disabled,
+                            Parent = script.Parent,
+                            Enabled = not script.Disabled
+                        }
+                        script.Disabled = true  -- Disable but don't destroy
+                    end
+                end
+
+                -- Create anchored replacements
+                for _, partInfo in ipairs(_G.BouncerBackup.Models[model].Parts) do
+                    local part = Instance.new("Part")
+                    part.Size = partInfo.Size
+                    part.Position = partInfo.Position
+                    part.Orientation = partInfo.Orientation
+                    part.Color = partInfo.Color
+                    part.Transparency = partInfo.Transparency
+                    part.Material = partInfo.Material
+                    part.Anchored = true
+                    part.CanCollide = true
+                    part.Name = "BouncerReplacement"
+                    part.Parent = path
+                end
+
+                model.Parent = nil  -- Hide original instead of destroying
             end
         end
-        DiscordLib:Notification("Trampoline", "Bounce disabled", "Okay")
     else
-        -- Remove replacements and restore originals
-        for _, item in ipairs(path:GetChildren()) do
-            if item.Name == "BouncerReplacement" then
-                item:Destroy()
-            elseif item.Name == "Bouncer" and not item:IsDescendantOf(workspace) then
-                item.Parent = path
+        -- TOGGLE OFF - Restore everything
+        -- Remove replacement parts
+        for _, part in ipairs(path:GetChildren()) do
+            if part.Name == "BouncerReplacement" and part:IsA("BasePart") then
+                part:Destroy()
             end
         end
-        DiscordLib:Notification("Trampoline", "Bounce restored", "Okay")
+
+        -- Restore original models
+        for model, data in pairs(_G.BouncerBackup.Models) do
+            if typeof(model) == "Instance" then
+                model.Parent = path  -- Restore original model
+                model:PivotTo(data.CFrame)
+            end
+        end
+
+        -- Restore all scripts to original state
+        for script, data in pairs(_G.BouncerBackup.Scripts) do
+            if typeof(script) == "Instance" and script:IsDescendantOf(path) then
+                script.Disabled = data.Disabled  -- Restore original disabled state
+                script.Source = data.Source     -- Ensure original code
+            end
+        end
+
+        _G.BouncerBackup = nil  -- Cleanup
     end
 end)
 
