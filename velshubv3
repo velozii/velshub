@@ -2,7 +2,7 @@ local DiscordLib = loadstring(game:HttpGet "https://raw.githubusercontent.com/ve
 
 local win = DiscordLib:Window("shade's hub :3")
 
-local serv = win:Server("Modern Crossroads", "http://www.roblox.com/asset/?id=135869063988151")
+local serv = win:Server("Modern Crossroads", https://tr.rbxcdn.com/135869063988151/image")
 -- Labels Channel
 
 local lbls = serv:Channel("Credits & hall of fame")
