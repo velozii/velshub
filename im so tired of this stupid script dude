@@ -1,0 +1,535 @@
+local DiscordLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/velozii/velshub/refs/heads/main/hub"))()
+
+-- Main Window
+local win = DiscordLib:Window("Shade's Hub v2.2")
+
+-- Modern Crossroads Server
+local serv = win:Server("Modern Crossroads", "")
+
+-- Credits Channel
+local credits = serv:Channel("Credits")
+credits:Label("Developed by Shade")
+credits:Label("Version 2.2 - Updated UI & Features")
+credits:Seperator()
+credits:Label("Special thanks to the nice person below")
+credits:Label("seer! :)")
+
+-- Scripts Channel
+local scripts = serv:Channel("Scripts")
+
+-- Infinite Yield
+scripts:Button("Infinite Yield", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/edgeiy/infiniteyield/master/source"))()
+    DiscordLib:Notification("Success", "Loaded Infinite Yield Admin", "Okay")
+end)
+scripts:Label("Advanced admin commands")
+scripts:Seperator()
+
+-- Hitbox Extender
+scripts:Button("Hitbox Extender", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/velozii/hbe/refs/heads/main/hbe"))()
+    DiscordLib:Notification("Success", "Loaded Hitbox Extender", "Okay")
+end)
+scripts:Label("Use loopbring [player] [distance] 0 to spawnkill")
+scripts:Seperator()
+
+-- Supply Drop Checker
+scripts:Button("Supply Drop Notifier", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/velozii/hbe/refs/heads/main/SDNotif"))()
+    DiscordLib:Notification("Checking", "Monitoring for supply drops...", "Okay")
+end)
+scripts:Label("No notification = no active drops")
+scripts:Seperator()
+
+-- Features Channel
+local features = serv:Channel("Game Features")
+
+-- Safe Spot
+local safeSpotData = {
+    Platform = nil,
+    Light = nil,
+    OriginalPosition = nil
+}
+
+features:Toggle("Safe Spot", false, function(bool)
+    local player = game:GetService("Players").LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    
+    if bool then
+        -- Store original position
+        safeSpotData.OriginalPosition = humanoidRootPart.Position
+        
+        -- Create platform
+        local part = Instance.new("Part")
+        part.Size = Vector3.new(30, 5, 30)
+        part.Position = Vector3.new(10000, 10000, 10000)
+        part.Anchored = true
+        part.CanCollide = true
+        part.Name = "SafeSpotPlatform"
+        part.Material = Enum.Material.Neon
+        part.Color = Color3.fromRGB(50, 255, 50)
+        part.Transparency = 0.3
+        part.Parent = workspace
+        
+        -- Create light
+        local light = Instance.new("SpotLight")
+        light.Parent = part
+        light.Face = Enum.NormalId.Top
+        light.Angle = 90
+        light.Brightness = 5
+        light.Range = 50
+        light.Color = Color3.fromRGB(100, 255, 100)
+        light.Shadows = true
+        
+        safeSpotData.Platform = part
+        safeSpotData.Light = light
+        
+        -- Teleport player
+        humanoidRootPart.CFrame = CFrame.new(10000, 10005, 10000)
+        DiscordLib:Notification("Safe Spot", "Created safe platform", "Okay")
+    else
+        -- Cleanup
+        if safeSpotData.OriginalPosition then
+            humanoidRootPart.CFrame = CFrame.new(safeSpotData.OriginalPosition)
+        end
+        
+        if safeSpotData.Platform then
+            safeSpotData.Platform:Destroy()
+            safeSpotData.Platform = nil
+            safeSpotData.Light = nil
+        end
+        
+        safeSpotData.OriginalPosition = nil
+        DiscordLib:Notification("Safe Spot", "Removed safe platform", "Okay")
+    end
+end)
+
+-- No Hole
+features:Toggle("No Hole", false, function(bool)
+    local partPosition = Vector3.new(-82.5, -10.24, -134.15)
+    local partSize = Vector3.new(39, 1, 40)
+    
+    if bool then
+        if not workspace:FindFirstChild("NoHolePlatform") then
+            local part = Instance.new("Part")
+            part.Name = "NoHolePlatform"
+            part.Anchored = true
+            part.Position = partPosition
+            part.Size = partSize
+            part.Parent = workspace
+            DiscordLib:Notification("No Hole", "Hole patched", "Okay")
+        end
+    else
+        local existingPart = workspace:FindFirstChild("NoHolePlatform")
+        if existingPart then
+            existingPart:Destroy()
+            DiscordLib:Notification("No Hole", "Hole restored", "Okay")
+        end
+    end
+end)
+
+-- Force Daytime
+features:Toggle("Force Daytime", false, function(bool)
+    local Lighting = game:GetService("Lighting")
+    local RunService = game:GetService("RunService")
+    
+    if bool then
+        if _G.ClientDaylightLoop then
+            _G.ClientDaylightLoop:Disconnect()
+        end
+        
+        if not _G.OriginalClientTime then
+            _G.OriginalClientTime = Lighting.ClockTime
+        end
+        
+        _G.ClientDaylightLoop = RunService.Heartbeat:Connect(function()
+            Lighting.ClockTime = 12
+        end)
+        DiscordLib:Notification("Daytime", "Forced daytime enabled", "Okay")
+    else
+        if _G.ClientDaylightLoop then
+            _G.ClientDaylightLoop:Disconnect()
+            _G.ClientDaylightLoop = nil
+            
+            if _G.OriginalClientTime then
+                Lighting.ClockTime = _G.OriginalClientTime
+            end
+            DiscordLib:Notification("Daytime", "Time restored", "Okay")
+        end
+    end
+end)
+
+-- Anti Trampoline
+features:Toggle("Anti Trampoline", false, function(bool)
+    local path = workspace.CurrentMap.Map.Tower.PL3Trampoline
+    
+    if bool then
+        -- Create anchored replacements
+        for _, model in ipairs(path:GetChildren()) do
+            if model.Name == "Bouncer" and model:IsA("Model") then
+                for _, part in ipairs(model:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        local replacement = Instance.new("Part")
+                        replacement.Size = part.Size
+                        replacement.Position = part.Position
+                        replacement.Orientation = part.Orientation
+                        replacement.Anchored = true
+                        replacement.CanCollide = true
+                        replacement.Name = "BouncerReplacement"
+                        replacement.Parent = path
+                    end
+                end
+                model.Parent = nil
+            end
+        end
+        DiscordLib:Notification("Trampoline", "Bounce disabled", "Okay")
+    else
+        -- Remove replacements and restore originals
+        for _, item in ipairs(path:GetChildren()) do
+            if item.Name == "BouncerReplacement" then
+                item:Destroy()
+            elseif item.Name == "Bouncer" and not item:IsDescendantOf(workspace) then
+                item.Parent = path
+            end
+        end
+        DiscordLib:Notification("Trampoline", "Bounce restored", "Okay")
+    end
+end)
+
+-- Reality Shift
+features:Toggle("Reality Shift", false, function(bool)
+    local player = game:GetService("Players").LocalPlayer
+    
+    if bool then
+        -- Initialize effects
+        _G.RealityShiftData = {
+            Intensity = 0,
+            Original = {
+                Lighting = {
+                    Brightness = game.Lighting.Brightness,
+                    ColorShift_Top = game.Lighting.ColorShift_Top,
+                    Ambient = game.Lighting.Ambient
+                },
+                CharacterColors = {},
+                Materials = {},
+                Transparency = {}
+            },
+            SoundIds = {145143628, 5191870265, 9043346594, 1845756489},
+            LastSoundTime = 0
+        }
+
+        -- Get character
+        local character = player.Character or player.CharacterAdded:Wait()
+        
+        -- Store original properties
+        for _, part in ipairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                _G.RealityShiftData.Original.CharacterColors[part] = part.Color
+                _G.RealityShiftData.Original.Materials[part] = part.Material
+                _G.RealityShiftData.Original.Transparency[part] = part.Transparency
+            end
+        end
+
+        -- Create post-processing effects
+        _G.RealityShiftBlur = Instance.new("BlurEffect")
+        _G.RealityShiftBlur.Size = 0
+        _G.RealityShiftBlur.Parent = game.Lighting
+
+        _G.RealityShiftBloom = Instance.new("BloomEffect")
+        _G.RealityShiftBloom.Intensity = 0
+        _G.RealityShiftBloom.Parent = game.Lighting
+
+        -- Main effect loop
+        _G.RealityShiftLoop = game:GetService("RunService").Heartbeat:Connect(function(dt)
+            local data = _G.RealityShiftData
+            data.Intensity = math.min(data.Intensity + dt/10, 1)
+            local chaos = data.Intensity * 5
+            local t = tick()
+
+            -- Random sound effects
+            if t - data.LastSoundTime > (1 / (1 + chaos * 2)) then
+                data.LastSoundTime = t
+                
+                local soundId = data.SoundIds[math.random(1, #data.SoundIds)]
+                local sound = Instance.new("Sound")
+                sound.SoundId = "rbxassetid://"..soundId
+                sound.Parent = workspace
+                sound.Pitch = 0.5 + math.random() * 2
+                sound.Volume = 1 + math.random() * 1.5
+                sound:Play()
+                game:GetService("Debris"):AddItem(sound, 10)
+            end
+
+            -- Lighting effects
+            game.Lighting.Brightness = 2 + math.sin(t*3) * (0.5 + chaos*0.8)
+            game.Lighting.ColorShift_Top = Color3.fromHSV((t*0.3*chaos)%1, 1, 1)
+            game.Lighting.Ambient = Color3.fromHSV((t*0.25*chaos)%1, 0.8, 0.8)
+
+            -- Character effects
+            if character and character.Parent then
+                for part, _ in pairs(data.Original.CharacterColors) do
+                    if part.Parent then
+                        part.Color = Color3.fromHSV(
+                            (t*0.1*chaos + part.Position.X*0.005)%1,
+                            0.8 + math.sin(t*2 + part.Position.Y)*0.2,
+                            0.8 + math.cos(t*3 + part.Position.Z)*0.2
+                        )
+                        part.Material = Enum.Material.Neon
+                        part.Transparency = 0.2 + math.sin(t*0.5)*0.1
+                    end
+                end
+            end
+
+            -- Camera effects
+            if workspace.CurrentCamera then
+                local cam = workspace.CurrentCamera
+                local wobble = chaos * 0.05
+                cam.CFrame = cam.CFrame * 
+                    CFrame.Angles(
+                        math.sin(t*3)*wobble, 
+                        math.cos(t*2.5)*wobble, 
+                        math.sin(t*2)*wobble*0.5
+                    )
+                cam.FieldOfView = 70 + math.sin(t*5)*5*chaos
+            end
+
+            -- Post-processing
+            _G.RealityShiftBlur.Size = chaos * 10
+            _G.RealityShiftBloom.Intensity = chaos * 2
+        end)
+
+        DiscordLib:Notification("Warning", "Reality distortion active", "Brace yourself")
+    else
+        -- Cleanup
+        if _G.RealityShiftLoop then
+            _G.RealityShiftLoop:Disconnect()
+            _G.RealityShiftLoop = nil
+        end
+
+        if _G.RealityShiftData then
+            for prop, val in pairs(_G.RealityShiftData.Original.Lighting) do
+                game.Lighting[prop] = val
+            end
+        end
+
+        local character = player.Character
+        if character and _G.RealityShiftData then
+            for part, color in pairs(_G.RealityShiftData.Original.CharacterColors) do
+                if part and part.Parent then
+                    part.Color = color
+                    part.Material = _G.RealityShiftData.Original.Materials[part]
+                    part.Transparency = _G.RealityShiftData.Original.Transparency[part]
+                end
+            end
+        end
+
+        if _G.RealityShiftBlur then
+            _G.RealityShiftBlur:Destroy()
+            _G.RealityShiftBlur = nil
+        end
+        
+        if _G.RealityShiftBloom then
+            _G.RealityShiftBloom:Destroy()
+            _G.RealityShiftBloom = nil
+        end
+
+        if workspace.CurrentCamera then
+            workspace.CurrentCamera.FieldOfView = 70
+        end
+
+        for _, sound in ipairs(workspace:GetChildren()) do
+            if sound:IsA("Sound") then
+                sound:Stop()
+                sound:Destroy()
+            end
+        end
+
+        _G.RealityShiftData = nil
+        DiscordLib:Notification("Success", "Reality restored", "Welcome back")
+    end
+end)
+
+-- Special Features for Authorized Users
+local specialUsers = {
+    ["TheDeep_Seas"] = true,
+    ["4nachronism"] = true,
+    ["MacabreWarbird"] = true,
+    ["s0ul_extrminat0r"] = true,
+    ["R_VESO"] = true
+}
+
+if specialUsers[game:GetService("Players").LocalPlayer.Name] then
+    local restricted = serv:Channel("Restricted Features")
+    restricted:Label("⚠️ AUTHORIZED USER DETECTED ⚠️")
+    restricted:Label("Unlocking restricted content...")
+    restricted:Seperator()
+    
+    restricted:Toggle("Enhanced Reality Shift", false, function(bool)
+        local player = game:GetService("Players").LocalPlayer
+        
+        if bool then
+            -- Initialize effects
+            _G.EnhancedRealityData = {
+                Intensity = 0,
+                SoundIds = {145143628, 5191870265, 9043346594, 1845756489},
+                ImageIds = {10670510726, 7488932287, 10652544603, 18494195773},
+                JumpscareId = 116678733954009,
+                LastSoundTime = 0,
+                LastImageTime = 0,
+                ChaosLevel = 0
+            }
+
+            -- Create post-processing effects
+            _G.EnhancedBlur = Instance.new("BlurEffect")
+            _G.EnhancedBlur.Size = 0
+            _G.EnhancedBlur.Parent = game.Lighting
+
+            _G.EnhancedBloom = Instance.new("BloomEffect")
+            _G.EnhancedBloom.Intensity = 0
+            _G.EnhancedBloom.Parent = game.Lighting
+
+            -- Main effect loop
+            _G.EnhancedLoop = game:GetService("RunService").Heartbeat:Connect(function(dt)
+                local data = _G.EnhancedRealityData
+                data.Intensity = math.min(data.Intensity + dt/10, 1)
+                data.ChaosLevel = data.Intensity * 4
+                local t = tick()
+
+                -- Random sounds
+                if t - data.LastSoundTime > (3 - data.ChaosLevel * 0.2) * math.random() then
+                    data.LastSoundTime = t
+                    
+                    local soundId = data.SoundIds[math.random(#data.SoundIds)]
+                    local sound = Instance.new("Sound")
+                    sound.SoundId = "rbxassetid://"..soundId
+                    sound.Parent = workspace
+                    sound.Pitch = 0.5 + math.random() * 1.5
+                    sound.Volume = 0.8 + math.random() * 0.7
+                    sound:Play()
+                    game:GetService("Debris"):AddItem(sound, 10)
+                end
+
+                -- Random images (jumpscares)
+                if t - data.LastImageTime > (4 - data.ChaosLevel * 0.3) * math.random() then
+                    data.LastImageTime = t
+                    
+                    local gui = Instance.new("ScreenGui")
+                    gui.Name = "EnhancedJumpscare"
+                    gui.ResetOnSpawn = false
+                    gui.IgnoreGuiInset = true
+                    gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+                    
+                    local image = Instance.new("ImageLabel")
+                    image.Size = UDim2.new(1, 0, 1, 0)
+                    image.BackgroundTransparency = 1
+                    image.Image = "rbxassetid://"..data.JumpscareId
+                    image.Parent = gui
+                    gui.Parent = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui")
+                    
+                    -- Flashing effect
+                    task.spawn(function()
+                        image.Visible = true
+                        task.wait(0.25)
+                        image.Visible = false
+                        task.wait(0.15)
+                        image.Visible = true
+                        task.wait(0.3)
+                        image.Visible = false
+                        task.wait(0.5)
+                        gui:Destroy()
+                    end)
+                end
+
+                -- Visual effects
+                game.Lighting.Brightness = 1.5 + math.sin(t*3*data.ChaosLevel) * (0.3 + data.ChaosLevel*0.3)
+                game.Lighting.ColorShift_Top = Color3.fromHSV((t*0.2*data.ChaosLevel)%1, 0.7, 0.8)
+                game.Lighting.Ambient = Color3.fromHSV((t*0.25*data.ChaosLevel)%1, 0.6, 0.7)
+
+                -- Camera effects
+                if workspace.CurrentCamera then
+                    local cam = workspace.CurrentCamera
+                    local wobble = data.ChaosLevel * 0.04
+                    cam.CFrame = cam.CFrame * 
+                        CFrame.Angles(
+                            math.sin(t*3)*wobble, 
+                            math.cos(t*2.5)*wobble, 
+                            math.sin(t*2)*wobble*0.5
+                        )
+                    cam.FieldOfView = 70 + math.sin(t*5)*8*data.ChaosLevel
+                end
+
+                -- Post-processing
+                _G.EnhancedBlur.Size = data.ChaosLevel * 8
+                _G.EnhancedBloom.Intensity = data.ChaosLevel * 1.5
+            end)
+
+            DiscordLib:Notification("Warning", "Enhanced effects activated", "Extreme content")
+        else
+            -- Cleanup
+            if _G.EnhancedLoop then
+                _G.EnhancedLoop:Disconnect()
+                _G.EnhancedLoop = nil
+            end
+
+            -- Remove post-processing
+            if _G.EnhancedBlur then
+                _G.EnhancedBlur:Destroy()
+                _G.EnhancedBlur = nil
+            end
+            
+            if _G.EnhancedBloom then
+                _G.EnhancedBloom:Destroy()
+                _G.EnhancedBloom = nil
+            end
+
+            -- Clear sounds
+            for _, sound in ipairs(workspace:GetChildren()) do
+                if sound:IsA("Sound") then
+                    sound:Stop()
+                    sound:Destroy()
+                end
+            end
+
+            -- Clear images
+            local playerGui = player:FindFirstChildOfClass("PlayerGui")
+            if playerGui then
+                for _, gui in ipairs(playerGui:GetChildren()) do
+                    if gui.Name == "EnhancedJumpscare" then
+                        gui:Destroy()
+                    end
+                end
+            end
+
+            _G.EnhancedRealityData = nil
+            DiscordLib:Notification("Success", "Effects disabled", "Session ended")
+        end
+    end)
+    
+    restricted:Label("This feature contains extreme visuals")
+    restricted:Seperator()
+end
+
+-- UI Elements Channel
+local ui = serv:Channel("UI Settings")
+
+-- Slider
+ui:Slider("UI Transparency", 0, 100, 50, false, function(value)
+    DiscordLib:UpdateTransparency(value/100)
+end)
+
+-- Colorpicker
+ui:Colorpicker("UI Color", Color3.fromRGB(255, 1, 1), function(color)
+    DiscordLib:UpdateColor(color)
+end)
+
+-- Quality of Life Channel
+local qol = serv:Channel("Quality of Life")
+
+qol:Button("Rejoin Server", function()
+    game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
+    DiscordLib:Notification("Rejoining", "Attempting to rejoin...", "Okay")
+end)
+
+-- Second Server (Main)
+win:Server("Settings", "http://www.roblox.com/asset/?id=6031075938")
