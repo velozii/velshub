@@ -1,10 +1,14 @@
 local DiscordLib = loadstring(game:HttpGet "https://raw.githubusercontent.com/velozii/velshub/refs/heads/main/hub")()
 
-local win = DiscordLib:Window("vel's hub :3")
+local win = DiscordLib:Window("shade's hub :3")
 
-local serv = win:Server("Modern Crossroads", "117680836444329")
+local serv = win:Server("Modern Crossroads", "https://create.roblox.com/store/asset/14922736448")
 
--- Buttons Channel
+local lbls = serv:Channel("Credits & hall of fame")
+
+lbls:Label("Modern Crossroads Hub v1.0")
+lbls:Label("Seer and shade are cool! :)")
+
 local btns = serv:Channel("Buttons")
 
 btns:Button(
@@ -70,11 +74,39 @@ tgls:Toggle(
 )
 
 tgls:Toggle(
+    "No Hole",
+    false,
+    function(bool)
+        local partPosition = Vector3.new(-82.5, -10.24, -134.15)
+        local partSize = Vector3.new(39, 1, 40)
+        
+        if bool then
+            if not workspace:FindFirstChild("TestPlatform2") then
+                local part = Instance.new("Part")
+                part.Name = "TestPlatform2"
+                part.Anchored = true
+                part.Position = partPosition
+                part.Size = partSize
+                part.Parent = workspace
+                DiscordLib:Notification("Platform", "Platform created!", "Okay!")
+            end
+        else
+            local existingPart = workspace:FindFirstChild("TestPlatform2")
+            if existingPart then
+                existingPart:Destroy()
+                DiscordLib:Notification("Platform", "Platform removed!", "Okay!")
+            end
+        end
+    end
+)
+
+
+tgls:Toggle(
     "Force Daytime",
     false,
     function(bool)
         local success, errorMessage = pcall(function()
-            local Lighting = game:GetService("Lighting")
+            local Lighting = game:GetService("Lighting")  -- Fixed typo (was "Lighting")
             local RunService = game:GetService("RunService")
             
             if bool then
@@ -112,7 +144,146 @@ tgls:Toggle(
     end
 )
 
--- Sliders Channel (fixed)
+tgls:Toggle(
+    "Reality Shift (fuck your game up!)",
+    false,
+    function(bool)
+        if bool then
+            -- 🌟 INITIALIZE EFFECTS 🌟
+            _G.RealityShiftData = {
+                Intensity = 0,
+                Original = {
+                    Lighting = {
+                        Brightness = game.Lighting.Brightness,
+                        ColorShift_Top = game.Lighting.ColorShift_Top,
+                        Ambient = game.Lighting.Ambient
+                    },
+                    CharacterColors = {},
+                    Materials = {},
+                    Transparency = {}
+                }
+            }
+
+            -- Get character
+            local player = game:GetService("Players").LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            
+            -- Store original properties
+            for _, part in ipairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    _G.RealityShiftData.Original.CharacterColors[part] = part.Color
+                    _G.RealityShiftData.Original.Materials[part] = part.Material
+                    _G.RealityShiftData.Original.Transparency[part] = part.Transparency
+                end
+            end
+
+            -- Create post-processing effects
+            _G.RealityShiftBlur = Instance.new("BlurEffect")
+            _G.RealityShiftBlur.Size = 0
+            _G.RealityShiftBlur.Parent = game.Lighting
+
+            _G.RealityShiftBloom = Instance.new("BloomEffect")
+            _G.RealityShiftBloom.Intensity = 0
+            _G.RealityShiftBloom.Parent = game.Lighting
+
+            -- 🌈 MAIN EFFECT LOOP 🌈
+            _G.RealityShiftLoop = game:GetService("RunService").Heartbeat:Connect(function(dt)
+                local data = _G.RealityShiftData
+                data.Intensity = math.min(data.Intensity + dt/10, 1)
+                local chaos = data.Intensity * 5
+                local t = tick()
+
+                -- 💡 LIGHTING EFFECTS
+                game.Lighting.Brightness = 2 + math.sin(t*3) * (0.5 + chaos*0.8)
+                game.Lighting.ColorShift_Top = Color3.fromHSV((t*0.3*chaos)%1, 1, 1)
+                game.Lighting.Ambient = Color3.fromHSV((t*0.25*chaos)%1, 0.8, 0.8)
+
+                -- 👤 CHARACTER EFFECTS
+                if character and character.Parent then
+                    for part, _ in pairs(data.Original.CharacterColors) do
+                        if part.Parent then
+                            part.Color = Color3.fromHSV(
+                                (t*0.1*chaos + part.Position.X*0.005)%1,
+                                0.8 + math.sin(t*2 + part.Position.Y)*0.2,
+                                0.8 + math.cos(t*3 + part.Position.Z)*0.2
+                            )
+                            part.Material = Enum.Material.Neon
+                            part.Transparency = 0.2 + math.sin(t*0.5)*0.1
+                        end
+                    end
+                end
+
+                -- 🎥 CAMERA EFFECTS
+                if workspace.CurrentCamera then
+                    local cam = workspace.CurrentCamera
+                    local wobble = chaos * 0.05
+                    cam.CFrame = cam.CFrame * 
+                        CFrame.Angles(
+                            math.sin(t*3)*wobble, 
+                            math.cos(t*2.5)*wobble, 
+                            math.sin(t*2)*wobble*0.5
+                        )
+                    cam.FieldOfView = 70 + math.sin(t*5)*5*chaos
+                end
+
+                -- ✨ POST-PROCESSING
+                _G.RealityShiftBlur.Size = chaos * 10
+                _G.RealityShiftBloom.Intensity = chaos * 2
+            end)
+
+            DiscordLib:Notification("Reality Shift", "Reality distortion activated", "See you later!")
+        else
+            -- 🧹 COMPLETE CLEANUP 🧹
+            -- Disconnect effect loop
+            if _G.RealityShiftLoop then
+                _G.RealityShiftLoop:Disconnect()
+                _G.RealityShiftLoop = nil
+            end
+
+            -- Restore lighting
+            if _G.RealityShiftData then
+                for prop, val in pairs(_G.RealityShiftData.Original.Lighting) do
+                    game.Lighting[prop] = val
+                end
+            end
+
+            -- Restore character
+            local player = game:GetService("Players").LocalPlayer
+            local character = player.Character
+            if character and _G.RealityShiftData then
+                for part, color in pairs(_G.RealityShiftData.Original.CharacterColors) do
+                    if part and part.Parent then
+                        part.Color = color
+                        part.Material = _G.RealityShiftData.Original.Materials[part]
+                        part.Transparency = _G.RealityShiftData.Original.Transparency[part]
+                    end
+                end
+            end
+
+            -- Remove post-processing
+            if _G.RealityShiftBlur then
+                _G.RealityShiftBlur:Destroy()
+                _G.RealityShiftBlur = nil
+            end
+            
+            if _G.RealityShiftBloom then
+                _G.RealityShiftBloom:Destroy()
+                _G.RealityShiftBloom = nil
+            end
+
+            -- Reset camera
+            if workspace.CurrentCamera then
+                workspace.CurrentCamera.FieldOfView = 70
+            end
+
+            -- Clear data
+            _G.RealityShiftData = nil
+
+            DiscordLib:Notification("Reality Shift", "Reality distortion finished.", "Welcome back!")
+        end
+    end
+)
+
 local sldrs = serv:Channel("Sliders")
 
 sldrs:Slider(
@@ -126,7 +297,6 @@ sldrs:Slider(
     end
 )
 
--- Dropdowns Channel
 local drops = serv:Channel("Dropdowns")
 
 local drop = drops:Dropdown(
@@ -154,7 +324,6 @@ drops:Button(
     end
 )
 
--- Colorpickers Channel
 local clrs = serv:Channel("Colorpickers")
 
 clrs:Colorpicker(
@@ -162,11 +331,10 @@ clrs:Colorpicker(
     Color3.fromRGB(255, 1, 1),
     function(color)
         print("Selected color:", color)
-        DiscordLib:Notification("Color", "Color selected!", "Okay!")
+    --    DiscordLib:Notification("Color", "Color selected!", "Okay!")
     end
 )
 
--- Textboxes Channel
 local textbs = serv:Channel("Textboxes")
 
 textbs:Textbox(
@@ -175,17 +343,10 @@ textbs:Textbox(
     true,
     function(text)
         print("Entered text:", text)
-        DiscordLib:Notification("Textbox", "You entered: "..text, "Okay!")
+   --     DiscordLib:Notification("Textbox", "You entered: "..text, "Okay!")
     end
 )
 
--- Labels Channel
-local lbls = serv:Channel("Labels")
-
-lbls:Label("Seer and vel are cool! :)")
-lbls:Label("Modern Crossroads Hub v1.0")
-
--- Binds Channel
 local bnds = serv:Channel("Binds")
 
 bnds:Bind(
@@ -193,9 +354,8 @@ bnds:Bind(
     Enum.KeyCode.RightShift,
     function()
         print("Bind pressed!")
-        DiscordLib:Notification("Bind", "RightShift pressed!", "Okay!")
+      --  DiscordLib:Notification("Bind", "RightShift pressed!", "Okay!")
     end
 )
 
--- Second Server
 win:Server("Main", "http://www.roblox.com/asset/?id=0")
